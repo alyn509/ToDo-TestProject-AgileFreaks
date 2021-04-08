@@ -23,13 +23,15 @@ schema_create = {
 @app.route('/v1/todos/')
 @app.route('/v1/todos/<status>')
 def list_all(status=ALL) -> object:
+    if status != ALL and status not in Status.value2member_map_:
+        return jsonify("Status not found"), 400
     todos_list = todos_repo.list_all(status)
     return jsonify({
         'items': [
             x.to_dict() for x in todos_list
         ],
         'details': {
-            'activeToDos': sum(map(lambda x: x.has_status(Status.ACTIVE.value), todos_list))
+            'activeToDos': sum(map(lambda x: x.has_status(Status.ACTIVE.value), todos_repo.list_all()))
         }
     })
 
@@ -44,3 +46,21 @@ def create():
         return list_all()
     except ValidationError as err:
         return jsonify(err.messages), 400
+
+
+@app.route('/v1/todos/<identifier>', methods=['DELETE'])
+def delete(identifier):
+    try:
+        todos_repo.remove(int(identifier))
+        return jsonify(identifier)
+    except IndexError as err:
+        return jsonify(str(err)), 400
+    except ValueError as err:
+        return jsonify(str(err)), 400
+
+
+@app.route('/v1/todos', methods=['DELETE'])
+@app.route('/v1/todos/', methods=['DELETE'])
+def clear():
+    todos_repo.clear()
+    return list_all()
