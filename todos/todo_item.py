@@ -1,13 +1,17 @@
+from .status import Status
+
+
 class ToDoItem:
-    def __init__(self, index: int, name: str, status: str):
-        self.id = index
+
+    def __init__(self, identifier: int, name: str, status: str):
+        self.id = identifier
         self.name = name
         self.status = status
 
     def has_status(self, status: str):
-        return status == 'all' or self.status == status
+        return status == Status.ALL.value or self.status == status
 
-    def serialize(self):
+    def to_dict(self):
         return {
             'id': self.id,
             'name': self.name,
