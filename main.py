@@ -1,11 +1,22 @@
-from flask import Flask, jsonify, request, abort
+from flask import Flask, jsonify, g
+from flask_expects_json import expects_json
 from todos import ToDoRepository, Status
+from marshmallow import ValidationError
 from todos.status import ALL
 
 app = Flask(__name__)
 todos_repo = ToDoRepository()
 todos_repo.add("make coffee", Status.INACTIVE.value)
 todos_repo.add("toast_bread")
+
+
+schema_create = {
+    'type': 'object',
+    'properties': {
+        'name': {'type': 'string'}
+    },
+    'required': ['name']
+}
 
 
 @app.route('/v1/todos')
@@ -25,10 +36,11 @@ def list_all(status=ALL) -> object:
 
 @app.route('/v1/todos', methods=['POST'])
 @app.route('/v1/todos/', methods=['POST'])
+@expects_json(schema_create)
 def create():
-    to_do = request.get_json()
-    if not to_do.get('name') or len(to_do.keys()) != 1:
-        abort(400)
-    else:
+    try:
+        to_do = g.data
         todos_repo.add(to_do['name'])
         return list_all()
+    except ValidationError as err:
+        return jsonify(err.messages), 400
