@@ -1,4 +1,4 @@
-from .status import Status
+from .status import Status, ALL
 
 
 class ToDoItem:
@@ -9,7 +9,7 @@ class ToDoItem:
         self.status = status
 
     def has_status(self, status: str):
-        return status == Status.ALL.value or self.status == status
+        return status == ALL or self.status == status
 
     def to_dict(self):
         return {

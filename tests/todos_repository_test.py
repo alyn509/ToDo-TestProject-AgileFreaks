@@ -27,7 +27,7 @@ class MyTestCase(unittest.TestCase):
         tds.add("make coffee")
         tds.add("toast_bread")
         tds.add("wash dishes", Status.INACTIVE.value)
-        self.assertEqual(3, len(tds.list_all(Status.ALL.value)))
+        self.assertEqual(3, len(tds.list_all()))
 
     def test_ListAllInactive_With2Active_ReturnsEmptyList(self):
         tds = ToDoRepository()
