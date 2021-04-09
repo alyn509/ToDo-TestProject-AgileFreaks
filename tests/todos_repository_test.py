@@ -42,9 +42,9 @@ class MyTestCase(unittest.TestCase):
         tds.add("toast bread")
         tds.add("wash dishes", Status.INACTIVE.value)
         tds.add("eat vegetables")
-        tds.remove(1)
-        tds.remove(2)
-        tds.remove(4)
+        tds.remove(tds.get(1))
+        tds.remove(tds.get(2))
+        tds.remove(tds.get(4))
         self.assertEqual(2, len(tds.list_all(Status.ACTIVE.value)))
         self.assertEqual(True, all(ele.has_status(Status.ACTIVE.value) for ele in tds.list_all(Status.ACTIVE.value)))
 

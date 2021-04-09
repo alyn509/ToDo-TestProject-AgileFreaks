@@ -9,7 +9,6 @@ todos_repo = ToDoRepository()
 todos_repo.add("make coffee", Status.INACTIVE.value)
 todos_repo.add("toast_bread")
 
-
 schema_create = {
     'type': 'object',
     'properties': {
@@ -51,10 +50,11 @@ def create():
 @app.route('/v1/todos/<identifier>', methods=['DELETE'])
 def delete(identifier):
     try:
-        todos_repo.remove(int(identifier))
+        index = todos_repo.get(int(identifier))
+        if index is None:
+            return jsonify("item with index %d does not exist" % int(identifier)), 404
+        todos_repo.remove(index)
         return jsonify(identifier)
-    except IndexError as err:
-        return jsonify(str(err)), 400
     except ValueError as err:
         return jsonify(str(err)), 400
 
